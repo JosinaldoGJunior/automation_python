@@ -35,6 +35,7 @@ jobs:
 
       - name: Install Allure CLI
         run: |
+          # Baixando e instalando o Allure CLI
           curl -o allure-commandline.zip -L https://github.com/allure-framework/allure2/releases/download/2.18.1/allure-2.18.1.zip
           unzip allure-commandline.zip -d /opt/allure
           ln -s /opt/allure/allure-2.18.1/bin/allure /usr/local/bin/allure
@@ -42,26 +43,24 @@ jobs:
       - name: Run tests
         run: |
           pytest --maxfail=3 --disable-warnings --alluredir=allure-results
-          # Verifica se o diretório allure-results foi criado
+          # Verificar se o diretório allure-results foi criado
           ls -R allure-results
 
       - name: Generate Allure Report
         if: always()
         run: |
-          if [ -d allure-results ]; then
+          # Verificar se o diretório allure-results contém arquivos
+          if [ -d allure-results ] && [ "$(ls -A allure-results)" ]; then
             echo "Gerando o relatório Allure..."
             allure generate allure-results --clean -o allure-report
-            # Verifica se o diretório allure-report foi criado
-            ls -R allure-report
           else
-            echo "O diretório allure-results não foi encontrado! Verifique os testes."
+            echo "O diretório allure-results não foi encontrado ou está vazio!"
             exit 1
           fi
 
-      - name: Copy Allure Report to gh-pages branch
+      - name: Criar o branch gh-pages se não existir
         if: always()
         run: |
-          # Criar o branch gh-pages se não existir
           git fetch origin gh-pages || git checkout --orphan gh-pages
           
           # Verificar se o diretório allure-report foi gerado
