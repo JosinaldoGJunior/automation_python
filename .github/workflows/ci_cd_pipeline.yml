@@ -33,6 +33,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Install Allure CLI
+        run: |
+          # Baixando e instalando o Allure CLI
+          curl -o allure-commandline.zip -L https://github.com/allure-framework/allure2/releases/download/2.18.1/allure-2.18.1.zip
+          unzip allure-commandline.zip -d /opt/allure
+          ln -s /opt/allure/allure-2.18.1/bin/allure /usr/local/bin/allure
+
       - name: Run tests
         run: |
           pytest --maxfail=3 --disable-warnings --alluredir=allure-results
