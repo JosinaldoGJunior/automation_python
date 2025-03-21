@@ -35,7 +35,6 @@ jobs:
 
       - name: Install Allure CLI
         run: |
-          # Baixando e instalando o Allure CLI
           curl -o allure-commandline.zip -L https://github.com/allure-framework/allure2/releases/download/2.18.1/allure-2.18.1.zip
           unzip allure-commandline.zip -d /opt/allure
           ln -s /opt/allure/allure-2.18.1/bin/allure /usr/local/bin/allure
@@ -43,13 +42,11 @@ jobs:
       - name: Run tests
         run: |
           pytest --maxfail=3 --disable-warnings --alluredir=allure-results
-          # Verificar se o diretório allure-results foi criado
           ls -R allure-results
 
       - name: Generate Allure Report
         if: always()
         run: |
-          # Verificar se o diretório allure-results contém arquivos
           if [ -d allure-results ]; then
             echo "Gerando o relatório Allure..."
             allure generate allure-results --clean -o allure-report
@@ -58,10 +55,9 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy Allure Report to GitHub Pages
+      - name: Copy Allure Report to gh-pages branch
         if: always()
         run: |
-          # Verifica se o diretório allure-report foi criado
           if [ -d allure-report ]; then
             echo "Relatório Allure gerado com sucesso!"
             git checkout gh-pages || git checkout --orphan gh-pages
@@ -73,3 +69,4 @@ jobs:
           else
             echo "Não foi possível gerar o relatório Allure!"
             exit 1
+          fi
