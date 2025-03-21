@@ -1,0 +1,59 @@
+# Nome do workflow para facilitar a identificação no GitHub Actions
+name: CI/CD Pipeline
+
+# Define quando o workflow será acionado
+on:
+  # Aciona o workflow quando houver um push na branch 'main'
+  push:
+    branches:
+      - main
+  # Aciona o workflow quando houver um pull request para a branch 'main'
+  pull_request:
+    branches:
+      - main
+  # Permite rodar o workflow manualmente pela interface do GitHub
+  workflow_dispatch:
+
+# Define os jobs (tarefas) que serão executados
+jobs:
+  test: # Nome do job
+    runs-on: ubuntu-latest  # Define que este job será executado em uma máquina com Ubuntu mais recente
+
+    # Define as variáveis de ambiente que serão usadas nos testes
+    env:
+      BASE_URL: ${{ secrets.BASE_URL }}  # Variável secreta para a URL base
+      API_LOGIN_URL: ${{ secrets.API_LOGIN_URL }}  # URL de login
+      API_EMAIL: ${{ secrets.API_EMAIL }}  # E-mail usado na autenticação
+      API_PASSWORD: ${{ secrets.API_PASSWORD }}  # Senha usada na autenticação
+
+    # Define a sequência de etapas a serem seguidas
+    steps:
+      # Faz o checkout (clonagem) do código do repositório
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Configura o ambiente com a versão 3.12 do Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Instala as dependências do projeto
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip  # Atualiza o pip
+          pip install -r requirements.txt  # Instala as dependências listadas no arquivo requirements.txt
+
+      # Executa os testes usando pytest e gera resultados para o Allure
+      - name: Run tests
+        run: pytest --maxfail=3 --disable-warnings --alluredir=allure-results
+
+      # Gera o relatório Allure (opcional)
+      - name: Generate Allure Report (opcional)
+        if: always()  # Executa mesmo que os testes falhem
+        uses: simple-elf/allure-report-action@v1.7
+        with:
+          allure_results: allure-results   # Pasta onde ficam os resultados dos testes
+          gh_pages: gh-pages               # Branch onde o relatório será publicado
+          allure_history: allure-history   # Pasta que armazena o histórico do Allure Report
+          keep_reports: 20                 # Mantém no máximo 20 relatórios para histórico

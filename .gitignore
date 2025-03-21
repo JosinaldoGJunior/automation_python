@@ -1,0 +1,18 @@
+# Arquivos do PyCharm
+.idea/
+
+# Dependências e ambientes virtuais
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+allure-results/
+
+# Arquivos de configuração local
+.env
+.DS_Store
