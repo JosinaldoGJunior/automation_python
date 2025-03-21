@@ -42,6 +42,7 @@ jobs:
       - name: Run tests
         run: |
           pytest --maxfail=3 --disable-warnings --alluredir=allure-results
+          # Verifica se o diretório allure-results foi criado
           ls -R allure-results
 
       - name: Generate Allure Report
@@ -50,6 +51,8 @@ jobs:
           if [ -d allure-results ]; then
             echo "Gerando o relatório Allure..."
             allure generate allure-results --clean -o allure-report
+            # Verifica se o diretório allure-report foi criado
+            ls -R allure-report
           else
             echo "O diretório allure-results não foi encontrado! Verifique os testes."
             exit 1
@@ -58,15 +61,18 @@ jobs:
       - name: Copy Allure Report to gh-pages branch
         if: always()
         run: |
-          if [ -d allure-report ]; then
+          # Criar o branch gh-pages se não existir
+          git fetch origin gh-pages || git checkout --orphan gh-pages
+          
+          # Verificar se o diretório allure-report foi gerado
+          if [ -d allure-report ] && [ "$(ls -A allure-report)" ]; then
             echo "Relatório Allure gerado com sucesso!"
-            git checkout gh-pages || git checkout --orphan gh-pages
             rm -rf *  # Limpa o diretório para garantir que não haja arquivos antigos
             cp -r allure-report/* .  # Copia o conteúdo do relatório Allure
             git add .  # Adiciona os novos arquivos
             git commit -m "Update Allure Report"  # Faz o commit
             git push origin gh-pages  # Envia para o GitHub Pages
           else
-            echo "Não foi possível gerar o relatório Allure!"
+            echo "Não foi possível gerar o relatório Allure ou a pasta está vazia!"
             exit 1
           fi
