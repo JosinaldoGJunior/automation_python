@@ -75,6 +75,8 @@ jobs:
             rm -rf *  # Limpa o diretório para garantir que não haja arquivos antigos
             cp -r allure-report/* .  # Copia o conteúdo do relatório Allure
             git add .  # Adiciona os novos arquivos
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
             git commit -m "Update Allure Report"  # Faz o commit
             git push origin gh-pages  # Envia para o GitHub Pages
           else
