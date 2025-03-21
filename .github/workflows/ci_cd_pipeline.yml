@@ -75,20 +75,23 @@ jobs:
       - name: Criar o branch gh-pages se não existir
         if: always()
         run: |
-          # Buscar e criar o branch gh-pages caso não exista
-          git fetch origin gh-pages || git checkout --orphan gh-pages
-
-          # Verificar se o diretório allure-report foi gerado e não está vazio
-          if [ -d allure-report ] && [ "$(ls -A allure-report)" ]; then
-            echo "Relatório Allure gerado com sucesso!"
-            rm -rf *  # Limpa o diretório para garantir que não haja arquivos antigos
-            cp -r allure-report/* .  # Copia o conteúdo do relatório Allure
-            git add .  # Adiciona os novos arquivos
-            git config --global user.name "GitHub Actions"
-            git config --global user.email "actions@github.com"
-            git commit -m "Update Allure Report"  # Faz o commit
-            git push origin gh-pages  # Envia para o GitHub Pages
-          else
-            echo "Erro: allure-report não foi criado ou está vazio!"
-            exit 1
+          # Salvar o relatório em um diretório temporário antes do checkout
+          if [ -d allure-report ]; then
+            mkdir -p /tmp/allure-report
+            cp -r allure-report/* /tmp/allure-report/
           fi
+
+          # Buscar e criar o branch gh-pages caso não exista
+          git fetch origin gh-pages || (git checkout --orphan gh-pages && git rm -rf .)
+
+          # Restaurar o relatório do diretório temporário
+          if [ -d /tmp/allure-report ]; then
+            cp -r /tmp/allure-report/* .
+          fi
+
+          # Configurar Git e fazer commit
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Update Allure Report"
+          git push origin gh-pages
