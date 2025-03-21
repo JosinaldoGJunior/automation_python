@@ -58,17 +58,18 @@ jobs:
             exit 1
           fi
 
-      - name: Copy Allure Report to gh-pages branch
+      - name: Deploy Allure Report to GitHub Pages
         if: always()
         run: |
           # Verifica se o diretório allure-report foi criado
           if [ -d allure-report ]; then
             echo "Relatório Allure gerado com sucesso!"
-            git checkout gh-pages
-            cp -r allure-report/* .
-            git add .
-            git commit -m "Update Allure report"
-            git push origin gh-pages
+            git checkout gh-pages || git checkout --orphan gh-pages
+            rm -rf *  # Limpa o diretório para garantir que não haja arquivos antigos
+            cp -r allure-report/* .  # Copia o conteúdo do relatório Allure
+            git add .  # Adiciona os novos arquivos
+            git commit -m "Update Allure Report"  # Faz o commit
+            git push origin gh-pages  # Envia para o GitHub Pages
           else
             echo "Não foi possível gerar o relatório Allure!"
             exit 1
