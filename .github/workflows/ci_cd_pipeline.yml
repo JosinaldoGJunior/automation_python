@@ -98,3 +98,4 @@ jobs:
           git add .
           git commit -m "Update Allure Report"
           git push origin gh-pages --force
+
