@@ -54,7 +54,7 @@ class TestAccount(BaseTest):
         self.check_status_code(response_delete_account,500)
         assert_that(response_delete_account.json()["detail"]).contains("is still referenced from table")
 
-    @pytest.mark.skip(reason="error")
+    
     def test_balance(self,headers,account_payload,transaction_payload):
 
         response_create_account = self.post("contas", json=account_payload, headers=headers)
