@@ -1,0 +1,10 @@
+INFO     root:base_test.py:42 🔹 POST: https://barrigarest.wcaquino.me/contas | Payload: {'nome': 'Conta97339'}
+DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): barrigarest.wcaquino.me:443
+DEBUG    urllib3.connectionpool:connectionpool.py:544 https://barrigarest.wcaquino.me:443 "POST /contas HTTP/1.1" 201 68
+INFO     root:base_test.py:63 🔹 Response completo: {"id":2429916,"nome":"Conta97339","visivel":true,"usuario_id":59590}
+INFO     root:base_test.py:64 🔹 Status Code Esperado: 201 | Recebido: 201
+INFO     root:base_test.py:42 🔹 POST: https://barrigarest.wcaquino.me/contas | Payload: {'nome': 'Conta97339'}
+DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): barrigarest.wcaquino.me:443
+DEBUG    urllib3.connectionpool:connectionpool.py:544 https://barrigarest.wcaquino.me:443 "POST /contas HTTP/1.1" 400 47
+INFO     root:base_test.py:63 🔹 Response completo: {"error":"Já existe uma conta com esse nome!"}
+INFO     root:base_test.py:64 🔹 Status Code Esperado: 400 | Recebido: 400

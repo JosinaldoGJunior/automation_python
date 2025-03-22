@@ -1,0 +1,6 @@
+INFO     root:base_test.py:36 🔹 GET: https://barrigarest.wcaquino.me/contas
+DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): barrigarest.wcaquino.me:443
+DEBUG    urllib3.connectionpool:connectionpool.py:544 https://barrigarest.wcaquino.me:443 "GET /contas HTTP/1.1" 401 None
+DEBUG    charset_normalizer:api.py:461 Encoding detection: ascii is most likely the one.
+INFO     root:base_test.py:63 🔹 Response completo: Unauthorized
+INFO     root:base_test.py:64 🔹 Status Code Esperado: 401 | Recebido: 401
