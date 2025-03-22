@@ -95,7 +95,7 @@ jobs:
         if: always()
         run: |
           git checkout gh-pages 2>/dev/null || git checkout --orphan gh-pages
-          find . -not -name '.gitignore' -exec rm -rf {} +
+          find . -mindepth 1 -not -name '.gitignore' -exec rm -rf {} +
           cp -r allure-report/* .
           git add .
           git commit -m "Update Allure Report"
