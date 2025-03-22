@@ -1,0 +1,15 @@
+INFO     root:base_test.py:42 🔹 POST: https://barrigarest.wcaquino.me/contas | Payload: {'nome': 'Contad4a7b'}
+DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): barrigarest.wcaquino.me:443
+DEBUG    urllib3.connectionpool:connectionpool.py:544 https://barrigarest.wcaquino.me:443 "POST /contas HTTP/1.1" 201 68
+INFO     root:base_test.py:63 🔹 Response completo: {"id":2429921,"nome":"Contad4a7b","visivel":true,"usuario_id":59590}
+INFO     root:base_test.py:64 🔹 Status Code Esperado: 201 | Recebido: 201
+INFO     root:base_test.py:48 🔹 PUT: https://barrigarest.wcaquino.me/contas/2429921 | Payload: {'nome': 'E_Contab40f3'}
+DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): barrigarest.wcaquino.me:443
+DEBUG    urllib3.connectionpool:connectionpool.py:544 https://barrigarest.wcaquino.me:443 "PUT /contas/2429921 HTTP/1.1" 200 70
+INFO     root:base_test.py:63 🔹 Response completo: {"id":2429921,"nome":"E_Contab40f3","visivel":true,"usuario_id":59590}
+INFO     root:base_test.py:64 🔹 Status Code Esperado: 200 | Recebido: 200
+INFO     root:base_test.py:36 🔹 GET: https://barrigarest.wcaquino.me/contas/2429921
+DEBUG    urllib3.connectionpool:connectionpool.py:1049 Starting new HTTPS connection (1): barrigarest.wcaquino.me:443
+DEBUG    urllib3.connectionpool:connectionpool.py:544 https://barrigarest.wcaquino.me:443 "GET /contas/2429921 HTTP/1.1" 200 70
+INFO     root:base_test.py:63 🔹 Response completo: {"id":2429921,"nome":"E_Contab40f3","visivel":true,"usuario_id":59590}
+INFO     root:base_test.py:64 🔹 Status Code Esperado: 200 | Recebido: 200
