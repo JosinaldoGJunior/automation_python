@@ -101,5 +101,5 @@ jobs:
 
       - name: Configurar Git
         run: |
-          git config --global user.name "JosinaldoGJunior"
-          git config --global user.email "josinaldo_jr@hotmail.com"
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
