@@ -23,15 +23,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Verificar variável BASE_URL
-        run: |
-          if [ -z "$BASE_URL" ]; then
-            echo "❌ Erro: BASE_URL não está definida!"
-            exit 1
-          else
-            echo "✅ BASE_URL encontrada!"
-          fi
-
       - name: Verificar localização do pytest.ini
         run: |
           if [ -f pytest.ini ]; then
@@ -50,18 +41,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install allure-pytest  # Instala o plugin do Allure para pytest
+          pip install allure-pytest
 
       - name: Install Allure CLI
         run: |
           curl -o allure-commandline.zip -L https://github.com/allure-framework/allure2/releases/download/2.18.1/allure-2.18.1.zip
           unzip allure-commandline.zip -d /opt/allure
           ln -s /opt/allure/allure-2.18.1/bin/allure /usr/local/bin/allure
-          allure --version  # Verifica se o Allure foi instalado corretamente
+          allure --version
 
       - name: Run tests
         run: |
-          pytest --maxfail=3 --disable-warnings
+          pytest --maxfail=3 --disable-warnings --alluredir=allure-results
           if [ -d allure-results ] && [ "$(ls -A allure-results)" ]; then
             echo "✅ Resultados dos testes gerados com sucesso!"
           else
@@ -84,7 +75,6 @@ jobs:
           else
             echo "❌ Erro: allure-results está vazio ou não foi criado!"
             exit 1
-          fi
 
       - name: Configurar Git
         run: |
@@ -94,9 +84,17 @@ jobs:
       - name: Publicar relatório no GitHub Pages
         if: always()
         run: |
-          git checkout gh-pages 2>/dev/null || git checkout --orphan gh-pages
-          find . -mindepth 1 -not -name '.gitignore' -exec rm -rf {} +
+          # Garantir que o branch gh-pages está atualizado
+          git fetch origin gh-pages || git checkout --orphan gh-pages
+
+          # Limpar apenas arquivos e pastas (exceto .git e .gitignore)
+          find . -type f -not -name '.gitignore' -delete
+          find . -type d -not -name '.git' -not -name '.' -exec rm -rf {} +
+
+          # Copiar o relatório Allure para o branch gh-pages
           cp -r allure-report/* .
+
+          # Fazer commit e push forçado para o branch gh-pages
           git add .
           git commit -m "Update Allure Report"
           git push origin gh-pages --force
