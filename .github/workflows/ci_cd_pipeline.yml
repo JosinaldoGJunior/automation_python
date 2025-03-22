@@ -99,3 +99,7 @@ jobs:
           git commit -m "Update Allure Report"
           git push origin gh-pages --force
 
+      - name: Configurar Git
+        run: |
+          git config --global user.name "JosinaldoGJunior"
+          git config --global user.email "josinaldo_jr@hotmail.com"
