@@ -8,6 +8,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # Executa todos os dias à meia-noite (UTC)
 
 jobs:
   test:
@@ -50,23 +52,44 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Passo 5: Instalar dependências
+      # Passo 5: Cache para dependências do Python
+      - name: Cache Python dependencies
+        id: pip-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+
+      # Passo 6: Instalar dependências
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install allure-pytest  # Instala o plugin do Allure para pytest
+          pip install allure-pytest
 
-      # Passo 6: Instalar Allure CLI (Método Manual)
+      # Passo 7: Cache para Allure CLI
+      - name: Cache Allure CLI
+        id: allure-cache
+        uses: actions/cache@v3
+        with:
+          path: /opt/allure-2.18.1
+          key: allure-${{ runner.os }}-2.18.1
+          restore-keys: |
+            allure-${{ runner.os }}-
+
+      # Passo 8: Instalar Allure CLI (se não estiver em cache)
       - name: Install Allure CLI
+        if: steps.allure-cache.outputs.cache-hit != 'true'
         run: |
           curl -Lo allure-2.18.1.tgz "https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.18.1/allure-commandline-2.18.1.tgz"
           sudo tar -zxvf allure-2.18.1.tgz -C /opt/
           sudo ln -s /opt/allure-2.18.1/bin/allure /usr/local/bin/allure
-          echo "/opt/allure-2.18.1/bin" >> $GITHUB_PATH  # Adiciona ao PATH
-          allure --version  # Verifica se o Allure foi instalado corretamente
+          echo "/opt/allure-2.18.1/bin" >> $GITHUB_PATH
+          allure --version
 
-      # Passo 7: Rodar os testes
+      # Passo 9: Rodar os testes
       - name: Run tests
         run: |
           pytest --maxfail=3 --disable-warnings --alluredir=allure-results
@@ -77,7 +100,7 @@ jobs:
             exit 1
           fi
 
-      # Passo 8: Carregar histórico de relatórios
+      # Passo 10: Carregar histórico de relatórios
       - name: Load test report history
         uses: actions/checkout@v4
         if: always()
@@ -86,7 +109,7 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      # Passo 9: Gerar relatório Allure
+      # Passo 11: Gerar relatório Allure
       - name: Generate Allure Report
         if: always()
         run: |
@@ -98,13 +121,13 @@ jobs:
             exit 1
           fi
 
-      # Passo 10: Configurar Git
+      # Passo 12: Configurar Git
       - name: Configurar Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      # Passo 11: Publicar relatório no GitHub Pages
+      # Passo 13: Publicar relatório no GitHub Pages
       - name: Publish test report
         uses: peaceiris/actions-gh-pages@v3
         if: always()

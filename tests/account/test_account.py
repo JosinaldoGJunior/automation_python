@@ -54,7 +54,7 @@ class TestAccount(BaseTest):
         self.check_status_code(response_delete_account,500)
         assert_that(response_delete_account.json()["detail"]).contains("is still referenced from table")
 
-    
+
     def test_balance(self,headers,account_payload,transaction_payload):
 
         response_create_account = self.post("contas", json=account_payload, headers=headers)
@@ -68,4 +68,4 @@ class TestAccount(BaseTest):
         response_banlace = self.get("saldo", headers=headers)
         self.check_status_code(response_banlace, 200)
 
-        assert_that(response_banlace.json()[-1].get("saldo")).is_equal_to(str(transaction_payload["valor"]))
+        assert_that(response_banlace.json()[0].get("saldo")).is_equal_to(str(transaction_payload["valor"]))

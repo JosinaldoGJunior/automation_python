@@ -23,7 +23,7 @@ def generate_transaction_payload():
     "tipo": random.choice(["DESP", "REC"]),
     "data_transacao" : NOW_DATE,
     "data_pagamento" : FUTURE_DATE,
-    "valor" : round(random.uniform(1.00, 1000.00), 2),
+    "valor" : round(random.uniform(500.00, 1000.00), 2),
     "status" : random.choice([True, False])
     }
 
