@@ -23,6 +23,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Verificar localização do pytest.ini
+        run: |
+          if [ -f pytest.ini ]; then
+            echo "✅ pytest.ini encontrado na raiz do projeto!"
+          else
+            echo "❌ pytest.ini NÃO foi encontrado na raiz do projeto!"
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -36,7 +45,6 @@ jobs:
 
       - name: Install Allure CLI
         run: |
-          # Baixando e instalando o Allure CLI
           curl -o allure-commandline.zip -L https://github.com/allure-framework/allure2/releases/download/2.18.1/allure-2.18.1.zip
           unzip allure-commandline.zip -d /opt/allure
           ln -s /opt/allure/allure-2.18.1/bin/allure /usr/local/bin/allure
@@ -44,31 +52,28 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --maxfail=3 --disable-warnings --alluredir=allure-results
-          # Verificar se o diretório allure-results foi criado e não está vazio
+          pytest --maxfail=3 --disable-warnings
           if [ -d allure-results ] && [ "$(ls -A allure-results)" ]; then
-            echo "Resultados dos testes gerados com sucesso!"
+            echo "✅ Resultados dos testes gerados com sucesso!"
           else
-            echo "Erro: allure-results está vazio ou não foi criado!"
+            echo "❌ Erro: allure-results está vazio ou não foi criado!"
             exit 1
           fi
 
       - name: Generate Allure Report
         if: always()
         run: |
-          # Verificar se o diretório allure-results contém arquivos
           if [ -d allure-results ] && [ "$(ls -A allure-results)" ]; then
             echo "Gerando o relatório Allure..."
             allure generate allure-results --clean -o allure-report
-            # Verificar se o diretório allure-report foi criado
             if [ -d allure-report ] && [ "$(ls -A allure-report)" ]; then
-              echo "Relatório Allure gerado com sucesso!"
+              echo "✅ Relatório Allure gerado com sucesso!"
             else
-              echo "Erro: allure-report não foi criado ou está vazio!"
+              echo "❌ Erro: allure-report não foi criado ou está vazio!"
               exit 1
             fi
           else
-            echo "Erro: allure-results está vazio ou não foi criado!"
+            echo "❌ Erro: allure-results está vazio ou não foi criado!"
             exit 1
           fi
 
@@ -80,11 +85,11 @@ jobs:
       - name: Publicar relatório no GitHub Pages
         if: always()
         run: |
-          # Criar o branch gh-pages se não existir
+          # Garantir que o branch gh-pages está atualizado
           git fetch origin gh-pages || git checkout --orphan gh-pages
 
           # Limpar o branch gh-pages (exceto o diretório .git)
-          git rm -rf .
+          git rm -rf . || true
 
           # Copiar o relatório Allure para o branch gh-pages
           cp -r allure-report/* .

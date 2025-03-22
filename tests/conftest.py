@@ -21,6 +21,13 @@ def headers():
     return headers
 
 
+def pytest_sessionfinish(session, exitstatus):
+    """Hook para verificar se o allure-results contém dados após os testes."""
+    results_dir = "allure-results"
+    if not os.listdir(results_dir):
+        print("⚠️ Erro: Nenhum resultado foi gerado no diretório allure-results.")
+
+
 @pytest.fixture
 def account_payload():
     return generate_account_payload()
